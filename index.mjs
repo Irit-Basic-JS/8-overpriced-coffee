@@ -54,12 +54,41 @@ app.get("/menu", (_, res) => {
   });
 });
 
+app.get("/cart", (_, res) => {
+  res.render("cart", {
+    layout: "default",
+    items: [
+      {
+        name: "Americano",
+        image: "/static/img/americano.jpg",
+        price: 999,
+      },
+      { name: "Cappuccino", 
+        image: "/static/img/cappuccino.jpg",
+        price: 999 },
+      { name: "Espresso", 
+        image: "/static/img/espresso.jpg",
+        price: 999 },
+      { name: "Flat-White", 
+        image: "/static/img/flat-white.jpg",
+        price: 999 }, 
+      { name: "Latte-macchiato", 
+        image: "/static/img/latte-macchiato.jpg",
+        price: 999 },
+      { name: "Iatte", 
+        image: "/static/img/latte.jpg",
+        price: 999 },       
+    ],
+  });
+});
+
 app.get("/buy/:name", (req, res) => {
   res.status(501).end();
 });
 
 app.get("/cart", (req, res) => {
-  res.sendFile(path.join(rootDir, "/views/cart.html"));
+  res.sendFile(path.join(rootDir, "/views/cart.hbs"));
+  
 });
 
 app.post("/cart", (req, res) => {
