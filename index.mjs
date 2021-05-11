@@ -6,52 +6,67 @@ import cookieParser from "cookie-parser";
 const rootDir = process.cwd();
 const port = 3000;
 const app = express();
+let cart = [];
+
+app.use('/static', express.static('static'));
 
 // Выбираем в качестве движка шаблонов Handlebars
 app.set("view engine", "hbs");
 // Настраиваем пути и дефолтный view
 app.engine(
-  "hbs",
-  hbs({
-    extname: "hbs",
-    defaultView: "default",
-    layoutsDir: path.join(rootDir, "/views/layouts/"),
-    partialsDir: path.join(rootDir, "/views/partials/"),
-  })
+    "hbs",
+    hbs({
+        extname: "hbs",
+        defaultView: "default",
+        layoutsDir: path.join(rootDir, "/views/layouts/"),
+        partialsDir: path.join(rootDir, "/views/partials/"),
+    })
 );
 
 app.get("/", (_, res) => {
-  res.sendFile(path.join(rootDir, "/static/html/index.html"));
+    res.redirect('/menu');
+    res.sendFile(path.join(rootDir, "/static/html/index.html"));
 });
 
 app.get("/menu", (_, res) => {
-  res.render("menu", {
-    layout: "default",
-    items: [
-      {
-        name: "Americano",
-        image: "/static/img/americano.jpg",
-        price: 999,
-      },
-      { name: "Cappuccino", image: "/static/img/cappuccino.jpg", price: 999 },
-    ],
-  });
+    res.render("menu", {
+        layout: "default",
+        items: [
+            {
+                name: "Americano",
+                image: "/static/img/americano.jpg",
+                price: 999,
+            },
+            {name: "Cappuccino", image: "/static/img/cappuccino.jpg", price: 999},
+            {name: "Flat-White", image: "/static/img/flat-white.jpg", price: 1000},
+            {name: "Latte", image: "/static/img/latte.jpg", price: 1000},
+            {name: "Espresso", image: "/static/img/espresso.jpg", price: 1000},
+            {name: "Small", image: "https://pbs.twimg.com/media/D5lG6pvWwAUlZXX.jpg", price: 1000},
+
+        ],
+    });
 });
 
 app.get("/buy/:name", (req, res) => {
-  res.status(501).end();
+  cart.push(req.params);
+  res.redirect('/menu');
+    //res.status(501).end();
 });
 
 app.get("/cart", (req, res) => {
-  res.status(501).end();
+    res.render("cart", {
+        layout: "default",
+    });
+    //res.status(501).end();
 });
 
 app.post("/cart", (req, res) => {
-  res.status(501).end();
+    res.status(501).end();
 });
 
 app.get("/login", (req, res) => {
-  res.status(501).end();
+    res.status(501).end();
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
+
