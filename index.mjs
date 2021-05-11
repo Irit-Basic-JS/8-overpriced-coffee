@@ -57,12 +57,13 @@ app.get("/cart", (req, res) => {
 });
 
 app.post("/cart", (req, res) => {
+    cart = [];
     res.redirect("/cart");
 });
 
 app.get("/login", (req, res) => {
     let username = req.query['username'] || req.cookies.username || 'Аноним';
-    
+
     if (username !== 'Аноним')
         res.cookie('username', username);
 
