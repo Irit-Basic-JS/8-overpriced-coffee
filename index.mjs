@@ -6,10 +6,22 @@ import cookieParser from "cookie-parser";
 const rootDir = process.cwd();
 const port = 3000;
 const app = express();
-let cart = [];
+
+let carts = {};
+let historyUsers = {};
+let drinks = [
+    {name: "Americano", image: "/static/img/americano.jpg", price: 999,},
+    {name: "Cappuccino", image: "/static/img/cappuccino.jpg", price: 999},
+    {name: "Flat-White", image: "/static/img/flat-white.jpg", price: 300},
+    {name: "Latte", image: "/static/img/latte.jpg", price: 1000},
+    {name: "Espresso", image: "/static/img/espresso.jpg", price: 1000},
+    {name: "Минус сердце", image: "https://pbs.twimg.com/media/D5lG6pvWwAUlZXX.jpg", price: 500},
+];
+
+//подрубка куки парсера
+app.use(cookieParser());
 
 app.use('/static', express.static('static'));
-
 // Выбираем в качестве движка шаблонов Handlebars
 app.set("view engine", "hbs");
 // Настраиваем пути и дефолтный view
@@ -31,41 +43,50 @@ app.get("/", (_, res) => {
 app.get("/menu", (_, res) => {
     res.render("menu", {
         layout: "default",
-        items: [
-            {
-                name: "Americano",
-                image: "/static/img/americano.jpg",
-                price: 999,
-            },
-            {name: "Cappuccino", image: "/static/img/cappuccino.jpg", price: 999},
-            {name: "Flat-White", image: "/static/img/flat-white.jpg", price: 1000},
-            {name: "Latte", image: "/static/img/latte.jpg", price: 1000},
-            {name: "Espresso", image: "/static/img/espresso.jpg", price: 1000},
-            {name: "Small", image: "https://pbs.twimg.com/media/D5lG6pvWwAUlZXX.jpg", price: 1000},
-
-        ],
+        items: drinks,
+        title: "Напитки"
     });
 });
 
 app.get("/buy/:name", (req, res) => {
-  cart.push(req.params);
-  res.redirect('/menu');
-    //res.status(501).end();
+    carts[req.cookies.name].push(drinks.find(d => d.name === req.params.name));
+    res.redirect('/menu');
 });
 
 app.get("/cart", (req, res) => {
     res.render("cart", {
         layout: "default",
+        totalPrice: carts[req.cookies.name] ? carts[req.cookies.name].reduce((prev, curr) => prev + curr.price, 0) : 0,
+        items: carts[req.cookies.name],
+        title: "Корзина"
     });
-    //res.status(501).end();
 });
 
 app.post("/cart", (req, res) => {
-    res.status(501).end();
+    historyUsers[req.cookies.name].push({drinks: carts[req.cookies.name]});
+    carts[req.cookies.name] = []
+    res.redirect("/cart");
 });
 
 app.get("/login", (req, res) => {
-    res.status(501).end();
+    let userName;
+    if (req.query.username) {
+        userName = req.query.username;
+        res.cookie("name", userName);
+    } else if (req.cookies && req.cookies.name) {
+        userName = req.cookies.name;
+    }
+
+    if (!carts[userName])
+        carts[userName]= [];
+    if (!historyUsers[userName])
+        historyUsers[userName] = [];
+    res.render("login", {
+        layout: "default",
+        param: userName || "Аноним",
+        title: "Личный кабинет",
+        history: historyUsers[userName]
+    });
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
