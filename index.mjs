@@ -22,6 +22,9 @@ let itemMap = {
 
 let cartItems = [];
 
+app.use('/static', express.static('static'));
+app.use(cookieParser());
+
 // Выбираем в качестве движка шаблонов Handlebars
 app.set("view engine", "hbs");
 // Настраиваем пути и дефолтный view
@@ -86,9 +89,29 @@ app.post("/cart", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.status(501).end();
-});
+  let username = req.query.username;
 
-app.use('/static', express.static('static'));
+  console.log(req.query);
+
+  if (username && req.cookies.username != username) {
+    console.log("set cookie");
+    res.cookie('username', username);
+  }
+  else {
+    console.log("cookie is set");
+    console.log(req.cookies);
+    username = req.cookies.username;
+  }
+
+  if (!username) {
+    console.log("set anonym username");
+    username = "Аноним"
+  }
+
+  res.render("login", {
+      layout: "default",
+      username: username,
+    });
+});
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
