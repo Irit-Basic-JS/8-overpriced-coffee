@@ -20,7 +20,7 @@ let itemMap = {
   "flat-white": { name: "Flat-White", image: "/static/img/flat-white.jpg", price: 903}
 };
 
-let cartItems = [];
+let usernameToCart = new Map();
 
 app.use('/static', express.static('static'));
 app.use(cookieParser());
@@ -63,6 +63,11 @@ app.get("/menu", (_, res) => {
 
 app.get("/buy/:name", (req, res) => {
   let name = req.params.name.toLowerCase();
+  let username = req.cookies.username;
+  if (!(username in usernameToCart)) {
+    usernameToCart[username] = [];
+  }
+  let cartItems = usernameToCart[username];
   cartItems.push(itemMap[name]);
   console.log(itemMap[name]);
   res.redirect('/menu');
@@ -70,6 +75,14 @@ app.get("/buy/:name", (req, res) => {
 
 app.get("/cart", (req, res) => {
   //res.sendFile(path.join(rootDir, "/static/html/cart.html"));
+  let username = req.cookies.username;
+  
+  if (!(username in usernameToCart)) {
+    usernameToCart[username] = [];
+  }
+
+  let cartItems = usernameToCart[username];
+
   let sum = 0;
 
   for (let item of cartItems) {
@@ -84,7 +97,8 @@ app.get("/cart", (req, res) => {
 });
 
 app.post("/cart", (req, res) => {
-  cartItems = [];
+  let username = req.cookies.username;
+  usernameToCart[username] = [];
   res.redirect("/menu");
 });
 
