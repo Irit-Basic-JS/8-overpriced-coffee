@@ -65,6 +65,7 @@ app.get("/menu", (_, res) => {
 	res.render("menu", {
 		layout: "default",
 		items: products,
+		title: "Меню",
 	});
 });
 
@@ -72,13 +73,22 @@ app.get("/cart", (req, res) => {
 	const user = getCurrentUser(req);
 	res.render("cart", {
 		layout: "default",
-		total: getTotalPrice(user.cart),
-		items: user.cart,
+		total: getTotalPrice(user?.cart || []),
+		items: user?.cart || [],
+		title: "Корзина",
 	});
 });
 
 app.post("/cart", (req, res) => {
 	const user = getCurrentUser(req);
+	if (!user) {
+		res.redirect("/login");
+		return;
+	}
+	user.history.push({
+		cart: user.cart,
+		id: user.id++
+	});
 	user.cart = [];
 	res.redirect("/cart");
 });
@@ -89,6 +99,8 @@ app.get("/login", (req, res) => {
 			const user = {
 				name: req.query.username,
 				cart: [],
+				history: [],
+				id: 1
 			};
 			users[user.name] = user;
 		}
@@ -97,13 +109,30 @@ app.get("/login", (req, res) => {
 	res.render("login", {
 		layout: "default",
 		username: req.cookies.name || "Аноним",
+		title: "Вход",
 	});
 });
 
 app.get("/buy/:name", function (req, res) {
 	const user = getCurrentUser(req);
+	if (!user) {
+		res.redirect("/login");
+		return;
+	}
 	user.cart.push(products.find(x => x.name === req.params.name));
 	res.redirect("/menu");
+});
+app.get("/history", function (req, res) {
+	const user = getCurrentUser(req);
+	if (!user) {
+		res.redirect("/login");
+		return;
+	}
+	res.render("history", {
+		layout: "default",
+		title: "Вход",
+		items: user.history,
+	});
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
