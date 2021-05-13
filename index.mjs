@@ -3,6 +3,7 @@ import * as path from "path";
 import hbs from "express-handlebars";
 import cookieParser from "cookie-parser";
 
+const users = {};
 const products = [
 	{
 		name: "Americano",
@@ -41,6 +42,7 @@ const rootDir = process.cwd();
 const port = 3000;
 const app = express();
 app.use("/static", express.static("static"));
+app.use(cookieParser());
 // Выбираем в качестве движка шаблонов Handlebars
 app.set("view engine", "hbs");
 // Настраиваем пути и дефолтный view
@@ -67,34 +69,58 @@ app.get("/menu", (_, res) => {
 });
 
 app.get("/cart", (req, res) => {
+	const user = getCurrentUser(req);
 	res.render("cart", {
 		layout: "default",
-		total: getTotalPrice(),
-		items: cart,
+		total: getTotalPrice(user.cart),
+		items: user.cart,
 	});
 });
 
 app.post("/cart", (req, res) => {
-	cart = [];
+	const user = getCurrentUser(req);
+	user.cart = [];
 	res.redirect("/cart");
 });
 
 app.get("/login", (req, res) => {
-	res.status(501).end();
+	if (req.query.username) {
+		if (!(req.query.username in users)) {
+			const user = {
+				name: req.query.username,
+				cart: [],
+			};
+			users[user.name] = user;
+		}
+		res.cookie("name", req.query.username);
+	}
+	res.render("login", {
+		layout: "default",
+		username: req.cookies.name || "Аноним",
+	});
 });
 
 app.get("/buy/:name", function (req, res) {
-	cart.push(products.find(x => x.name === req.params.name));
+	const user = getCurrentUser(req);
+	user.cart.push(products.find(x => x.name === req.params.name));
 	res.redirect("/menu");
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
 
 
-function getTotalPrice() {
+function getTotalPrice(cart) {
 	let sum = 0;
 	for (const product of cart) {
 		sum += product.price;
 	}
 	return sum;
+}
+
+function getCurrentUser(res) {
+	const name = res.cookies.name;
+	if (name in users) {
+		return users[name];
+	}
+	return null;
 }
