@@ -14,6 +14,7 @@ const items = [
     {name: "Flat white", image: "/static//img/flat-white.jpg", price: 999},
 ]
 let cart = [];
+let carts = {};
 
 app.use('/static', express.static('static'));
 app.use(cookieParser())
@@ -40,6 +41,7 @@ app.get("/menu", (_, res) => {
     res.render("menu", {
         layout: "default",
         items: items,
+        title: "Винная карта)"
     });
 });
 
@@ -53,6 +55,7 @@ app.get("/cart", (req, res) => {
         layout: "default",
         total: cart.reduce((a, b) => a + b.price, 0),
         items: cart,
+        title: "Корзина"
     });
 });
 
@@ -63,13 +66,17 @@ app.post("/cart", (req, res) => {
 
 app.get("/login", (req, res) => {
     let username = req.query['username'] || req.cookies.username || 'Аноним';
-
-    if (username !== 'Аноним')
+    if (username !== 'Аноним') {
         res.cookie('username', username);
+        if (!carts[username])
+            carts[username] = [];
+        cart = carts[username];
+    }
 
     res.render("login", {
         layout: "default",
         username: username,
+        title: "Личный кабинет"
     });
 });
 
