@@ -4,5 +4,11 @@ const defaultState = root.classList.contains("dark");
 
 themeSwitch.checked = defaultState;
 themeSwitch.addEventListener("click", () => {
-  root.classList.toggle("dark");
+  const isDark = root.classList.toggle("dark");
+  document.cookie = `theme=${isDark ? "dark" : "light"}`;
 });
+
+if (document.cookie.match("theme=dark")) {
+  root.classList.add("dark");
+  themeSwitch.checked = true;
+}

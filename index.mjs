@@ -7,7 +7,7 @@ const rootDir = process.cwd();
 const port = 3000;
 const app = express();
 
-const cart = [];
+const users = {};
 const menu = [
   {
     name: "Americano",
@@ -54,38 +54,59 @@ app.engine(
   })
 );
 
-app.use('/static', express.static(path.join(rootDir, '/static/')));
+app.use(cookieParser());
+
+app.use("/static", express.static(path.join(rootDir, "/static/")));
 
 app.get("/", (_, res) => {
-  res.redirect('/menu');
+  res.redirect("/menu");
 });
 
 app.get("/menu", (_, res) => {
   res.render("menu", {
     layout: "default",
-    items: menu
+    items: menu,
+    title: "Меню",
   });
 });
 
 app.get("/buy/:name/", (req, res) => {
-  cart.push(menu.find(item => item.name === req.params.name));
-  res.redirect('/menu');
+  const username = req.cookies.username;
+  users[username].cart.push(menu.find(item => item.name === req.params.name));
+  res.redirect("/menu");
 });
 
 app.get("/cart", (req, res) => {
+  const username = req.cookies.username;
   res.render("cart", {
     layout: "default",
-    fullPrice: cart.reduce((acc, cur) => acc + cur.price, 0),
-    items: cart,
+    fullPrice: users[username].cart.reduce((acc, cur) => acc + cur.price, 0),
+    items: users[username].cart,
+    title: "Корзина",
   })
 });
 
 app.post("/cart", (req, res) => {
-  res.status(501).end();
+  const username = req.cookies.username;
+  users[username].cart = [];
+  res.redirect("/cart");
 });
 
-app.get("/login", (req, res) => {
-  res.status(501).end();
+app.get("/login", (req, res) => {  
+  const username = req.query.username || req.cookies.username || "Аноним";
+  res.cookie("username", username);
+  if ( !(username in users) ) {
+    users[username] = {
+      cart: [],
+      history: [],
+    };
+  }
+  
+  res.render("login", {
+    layout: "default",
+    username: username,
+    title: "Личный кабинет",
+  });
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
