@@ -1,0 +1,13 @@
+<h1 style="text-align: center;">История заказов</h1>
+{{#each items}}
+<h2 style="text-align: center; margin-bottom: 0;">Заказ №{{inc @index}}</h2>
+<ul class="coffee__list">
+  {{#each this}}
+  <li>
+    <header class="coffee__name">{{name}}</header>
+    <img src="{{image}}" alt="{{name}}">
+    <footer>Цена: {{price}} ₽</footer>
+  </li>
+  {{/each}}
+</ul>
+{{/each}}

@@ -51,6 +51,9 @@ app.engine(
     defaultView: "default",
     layoutsDir: path.join(rootDir, "/views/layouts/"),
     partialsDir: path.join(rootDir, "/views/partials/"),
+    helpers: {
+      inc: value => Number(value) + 1,
+    },
   })
 );
 
@@ -89,8 +92,10 @@ app.get("/cart", (req, res) => {
 
 app.post("/cart", (req, res) => {
   const id = req.cookies.id || createUser(res);
-  users[id].history.push(users[id].cart);
-  users[id].cart = [];
+  if (users[id].cart.length !== 0) {
+    users[id].history.push(users[id].cart);
+    users[id].cart = [];
+  }
   res.redirect("/cart");
 });
 
@@ -105,6 +110,15 @@ app.get("/login", (req, res) => {
   res.render("login", {
     layout: "default",
     username: users[id].username,
+    title: "Личный кабинет",
+  });
+});
+
+app.get("/history", (req, res) => {
+  const id = req.cookies.id || createUser(res);
+  res.render("history", {
+    layout: "default",
+    items: users[id].history,
     title: "Личный кабинет",
   });
 });
