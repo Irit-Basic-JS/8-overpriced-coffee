@@ -7,7 +7,7 @@ const rootDir = process.cwd();
 const port = 3000;
 const app = express();
 
-const users = {};
+const users = [];
 const menu = [
   {
     name: "Americano",
@@ -68,45 +68,65 @@ app.get("/menu", (_, res) => {
     items: menu,
     title: "Меню",
   });
+  console.log(users);
 });
 
 app.get("/buy/:name/", (req, res) => {
-  const username = req.cookies.username;
-  users[username].cart.push(menu.find(item => item.name === req.params.name));
+  const id = req.cookies.id || createUser(res);
+  users[id].cart.push(menu.find(item => item.name === req.params.name));
   res.redirect("/menu");
 });
 
 app.get("/cart", (req, res) => {
-  const username = req.cookies.username;
+  const id = req.cookies.id || createUser(res);
   res.render("cart", {
     layout: "default",
-    fullPrice: users[username].cart.reduce((acc, cur) => acc + cur.price, 0),
-    items: users[username].cart,
+    fullPrice: users[id].cart.reduce((acc, cur) => acc + cur.price, 0),
+    items: users[id].cart,
     title: "Корзина",
   })
 });
 
 app.post("/cart", (req, res) => {
-  const username = req.cookies.username;
-  users[username].cart = [];
+  const id = req.cookies.id || createUser(res);
+  users[id].history.push(users[id].cart);
+  users[id].cart = [];
   res.redirect("/cart");
 });
 
 app.get("/login", (req, res) => {  
-  const username = req.query.username || req.cookies.username || "Аноним";
-  res.cookie("username", username);
-  if ( !(username in users) ) {
-    users[username] = {
-      cart: [],
-      history: [],
-    };
+  const id = req.cookies.id || createUser(res);
+  const username = req.query.username;
+  if (username) {
+    users[id].username = username;
+    setCookie(res, id, username);
   }
-  
+
   res.render("login", {
     layout: "default",
-    username: username,
+    username: users[id].username,
     title: "Личный кабинет",
   });
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
+
+function setCookie(res, id, username) {
+  res.cookie("id", id);
+  res.cookie("username", username);
+}
+
+function createUser(res) {
+  const id = users.length;
+  const username = "Аноним";
+  setCookie(res, id, username);
+
+  users.push({
+    id: id,
+    username: username,
+    cart: [],
+    history: [],
+  });
+
+  return id;
+}
