@@ -1,0 +1,15 @@
+<ul>
+    {{#each items}}
+        <li>
+            <h2>Заказ №{{id}}</h2>
+            <ul>
+                {{#each cart}}
+                <li>
+                    <h2>{{name}}</h2>
+                    <p>{{price}} ₽</p>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+    {{/each}}
+</ul>
