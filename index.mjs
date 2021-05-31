@@ -6,6 +6,16 @@ import cookieParser from "cookie-parser";
 const rootDir = process.cwd();
 const port = 3000;
 const app = express();
+let cart = [];
+
+let coffee = [
+  {name: "Americano", image: "/static/img/americano.jpg", price: 999,},
+  {name: "Cappuccino", image: "/static/img/cappuccino.jpg", price: 999},
+  {name: "Espresso", image: "/static/img/espresso.jpg", price: 999},
+  {name: "Flat-White", image: "/static/img/flat-white.jpg", price: 999},
+  {name: "Latte-macchiato", image: "/static/img/latte-macchiato.jpg",price: 999,},
+  {name: "Latte", image: "/static/img/latte.jpg", price: 999},
+];
 
 // Выбираем в качестве движка шаблонов Handlebars
 app.set("view engine", "hbs");
@@ -21,33 +31,31 @@ app.engine(
 );
 
 app.get("/", (_, res) => {
-  res.sendFile(path.join(rootDir, "/static/html/index.html"));
+  res.redirect("/menu");
 });
 
 app.get("/menu", (_, res) => {
   res.render("menu", {
     layout: "default",
-    items: [
-      {
-        name: "Americano",
-        image: "/static/img/americano.jpg",
-        price: 999,
-      },
-      { name: "Cappuccino", image: "/static/img/cappuccino.jpg", price: 999 },
-    ],
+    items: coffee,
   });
 });
 
 app.get("/buy/:name", (req, res) => {
-  res.status(501).end();
+  cart.push(coffee.find(item => item.name === req.params.name));
+  res.redirect("/menu");
 });
 
 app.get("/cart", (req, res) => {
-  res.status(501).end();
+  res.render("cart", {
+    layout: "default",
+    sum: cart.reduce((accumulator, currentValue) => accumulator + currentValue.price, 0),
+    items: cart,})
 });
 
 app.post("/cart", (req, res) => {
-  res.status(501).end();
+  cart = [];
+  res.redirect("/cart");
 });
 
 app.get("/login", (req, res) => {
@@ -55,3 +63,5 @@ app.get("/login", (req, res) => {
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
+
+app.use("/static", express.static("static"));
