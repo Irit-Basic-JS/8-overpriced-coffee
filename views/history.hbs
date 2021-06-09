@@ -1,0 +1,14 @@
+<ul class="list__history">
+    {{#each history}}
+        <li>
+            <span>Заказ №{{number}}</span>
+            <ul>
+                {{#each cart}}
+                    <li>
+                        {{name}} - {{price}} ₽
+                    </li>
+                {{/each}}
+            </ul>
+        </li>
+    {{/each}}
+</ul>
