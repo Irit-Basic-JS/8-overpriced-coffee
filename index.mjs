@@ -72,7 +72,7 @@ app.get("/menu", (_, res) => {
     items: Object.values(items),
   });
 });
-// cart2
+// cart2 
 app.get("/buy/:name", (req, res) => {
   let item = items[req.params.name];
   cartContents.push(item);
