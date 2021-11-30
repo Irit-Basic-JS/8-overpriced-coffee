@@ -1,0 +1,22 @@
+<div class="history-wrapper">
+    <table class="history-table">
+        <tr>
+            <th>Номер заказа</th>
+            <th>Время заказа</th>
+            <th>Товары</th>
+            <th>Сумма</th>
+        </tr>
+        {{#each orders}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{time}}</td>
+                <td>
+                    {{#each items}}
+                        {{name}}<br>
+                    {{/each}}
+                </td>
+                <td>{{sum}} ₽</td>
+            </tr>
+        {{/each}}
+    </table>
+</div>

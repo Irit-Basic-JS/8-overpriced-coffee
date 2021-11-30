@@ -194,3 +194,20 @@ body {
   padding: 1rem;
 }
 /* endregion cart */
+
+.history-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.history-table {
+  border-collapse: collapse;
+}
+
+.history-table td, .history-table th {
+  border: 1px solid var(--text-default);
+  padding: 5px;
+}
