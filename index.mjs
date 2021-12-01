@@ -9,7 +9,6 @@ const app = express();
 let currentCart = [];
 let sum = 0;
 
-
 const items = {
   "Americano": { name: "Americano", image: '/static/img/americano.jpg', price: 999 },
   "Cappuccino": { name: "Cappuccino", image: "/static/img/cappuccino.jpg", price: 899 },
@@ -33,7 +32,7 @@ app.engine(
 );
 
 app.use('/static', express.static('static'));
-
+app.use(cookieParser());
 
 app.get("/", (_, res) => {
   res.redirect('/menu');
@@ -68,7 +67,12 @@ app.post("/cart", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.status(501).end();
+  let username = req.query.username || req.cookies.username || "Аноним";
+  res.cookie("username", username);
+  res.render("login", {
+    layout: "default",
+    username: username
+  });
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
