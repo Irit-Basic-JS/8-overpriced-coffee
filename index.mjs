@@ -41,6 +41,7 @@ app.get("/menu", (_, res) => {
   res.render("menu", {
     layout: "default",
     items: Object.values(coffeeItems),
+    title: "Menu"
   });
 });
 
@@ -60,7 +61,8 @@ app.get("/cart", (req, res) => {
   res.render("cart", {
     layout: "default",
     cart: cart,
-    sum: sum
+    sum: sum,
+    title: "Cart"
   });
 });
 
@@ -74,7 +76,8 @@ app.get("/login", (req, res) => {
   res.cookie("username", username);
   res.render("login", {
     layout: "default",
-    username: username
+    username: username,
+    title: "Login"
   });
 });
 
