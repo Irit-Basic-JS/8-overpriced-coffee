@@ -6,10 +6,9 @@ import cookieParser from "cookie-parser";
 const rootDir = process.cwd();
 const port = 3000;
 const app = express();
-let currentCart = [];
-let sum = 0;
+let userCarts = {};
 
-const items = {
+const coffeeItems = {
   "Americano": { name: "Americano", image: '/static/img/americano.jpg', price: 999 },
   "Cappuccino": { name: "Cappuccino", image: "/static/img/cappuccino.jpg", price: 899 },
   "Espresso": { name: "Espresso", image: "/static/img/espresso.jpg", price: 299 },
@@ -41,33 +40,37 @@ app.get("/", (_, res) => {
 app.get("/menu", (_, res) => {
   res.render("menu", {
     layout: "default",
-    items: Object.values(items),
+    items: Object.values(coffeeItems),
   });
 });
 
 app.get("/buy/:name", (req, res) => {
-  let item = items[req.params.name];
-  currentCart.push(item);
-  sum += item.price;
+  const username = req.cookies.username;
+  if (!(username in userCarts)) {
+    userCarts[username] = [];
+  }
+  userCarts[username].push(coffeeItems[req.params.name]);
   res.redirect('/menu');
 });
 
 app.get("/cart", (req, res) => {
+  const user = req.cookies.username;
+  const cart = userCarts[user] || [];
+  const sum = cart.map(e => e.price).reduce((sum, price) => sum + price, 0);
   res.render("cart", {
     layout: "default",
-    cart: currentCart,
-    sum: sum,
+    cart: cart,
+    sum: sum
   });
 });
 
 app.post("/cart", (req, res) => {
-  currentCart = [];
-  sum = 0;
+  userCarts[req.cookies.username] = [];
   res.redirect("/menu");
 });
 
 app.get("/login", (req, res) => {
-  let username = req.query.username || req.cookies.username || "Аноним";
+  const username = req.query.username || req.cookies.username || "Аноним";
   res.cookie("username", username);
   res.render("login", {
     layout: "default",
