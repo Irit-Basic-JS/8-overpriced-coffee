@@ -1,0 +1,22 @@
+<main>
+<h1 style="margin-left: 1rem">История покупок:</h1>
+
+{{#each history}}
+<div>
+    <section class="cart__total" style="align-items: flex-start">
+    <div>Сумма заказа: {{sum}} ₽</div>
+    </section>
+    <ul class="coffee__list">
+        {{#each cart}}
+            <li>
+                <header class="coffee__name">{{name}}</header>
+                <img src="{{image}}" alt="{{name}}">
+                <footer>{{price}} ₽</footer>
+            </li>
+        {{/each}}
+    </ul>
+</div>
+<hr>
+{{/each}}
+
+</main>
