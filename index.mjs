@@ -41,6 +41,7 @@ app.get("/menu", (_, res) => {
   res.render("menu", {
     layout: "default",
     items: Object.values(menu),
+    title: "Menu"
   });
 });
 
@@ -62,7 +63,8 @@ app.get("/cart", (req, res) => {
   res.render("cart", {
     layout: "default",
     cart: cart,
-    sum: sum
+    sum: sum,
+    title: "Cart"
   });
 });
 
@@ -73,11 +75,12 @@ app.post("/cart", (req, res) => {
 
 app.get("/login", (req, res) => {
   const username = req.query.username || req.cookies.username || "Аноним";
-  
+
   res.cookie("username", username);
   res.render("login", {
     layout: "default",
-    username: username
+    username: username,
+    title: "Login"
   });
 });
 
