@@ -1,0 +1,13 @@
+{{#each history}}
+    <section class="user__hello">Заказ {{date}}</section>
+    <ul class="coffee__list">
+        {{#each items}}
+        <li>
+            <header class="coffee__name">{{name}}</header>
+            <img src="{{image}}" alt="{{name}}">
+        </li>
+        {{/each}}
+    </ul>
+{{else}}
+    <section class="user__hello">Прошлые заказы не найдены</section>
+{{/each}} 
