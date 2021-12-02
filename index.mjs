@@ -7,6 +7,7 @@ const rootDir = process.cwd();
 const port = 3000;
 const app = express();
 let userCarts = {};
+let history = {};
 
 const menu = {
   "Americano": { name: "Americano", image: '/static/img/americano.jpg', price: 999 },
@@ -16,6 +17,12 @@ const menu = {
   "Latte": { name: "Latte", image: "/static/img/latte.jpg", price: 399 },
   "Latte Macchiato": { name: "Latte Macchiato", image: "/static/img/latte-macchiato.jpg", price: 699 },
 };
+
+function HistoryEntry(items, date) {
+  return {
+    items, date
+  };
+}
 
 // Выбираем в качестве движка шаблонов Handlebars
 app.set("view engine", "hbs");
@@ -60,6 +67,12 @@ app.get("/cart", (req, res) => {
   const cart = userCarts[username] || [];
   const sum = cart.map(e => e.price).reduce((sum, price) => sum + price, 0);
 
+  if (history[username] === undefined)
+    history[username] = [];
+
+  const date = new Date(Date.now()).toLocaleString("ru-RU");
+  history[username].push(new HistoryEntry(cart, date));
+
   res.render("cart", {
     layout: "default",
     cart: cart,
@@ -81,6 +94,21 @@ app.get("/login", (req, res) => {
     layout: "default",
     username: username,
     title: "Login"
+  });
+});
+
+app.get("/history", (req, res) => {
+  const username = req.cookies.username;
+
+  if (history[username] === undefined)
+    history[username] = [];
+
+  history[username].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+
+  res.render("history", {
+    layout: "default",
+    title: "История заказов",
+    history: history[username],
   });
 });
 
