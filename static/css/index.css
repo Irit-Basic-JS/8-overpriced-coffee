@@ -53,7 +53,10 @@ body {
   padding: 0.5rem 1rem;
   box-shadow: 0 0 0 1px var(--border);
 }
-
+.historyBox {
+  border-bottom: 2px solid;
+  margin: 5px;
+}
 .navigation ul {
   display: flex;
   flex-flow: row nowrap;
@@ -65,7 +68,7 @@ body {
 }
 
 .navigation li {
-  margin: 0;
+  margin: 0 10px 0 10px;
   padding: 0;
   display: block;
   position: relative;
