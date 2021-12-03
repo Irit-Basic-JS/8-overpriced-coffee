@@ -1,0 +1,12 @@
+<h2>Эти напитки вы уже заказывали:</h2>
+<section class="history"></section>
+<ul class="coffee__list">
+    {{#each cartContents}}
+        <li>
+            <header class="coffee__name">{{name}}</header>
+            <img src="{{image}}" alt="{{name}}">
+            <a href="/bue/{{name}}" class="link action">
+            {{price}} ₽</a>
+        </li>
+    {{/each}}
+</ul>
