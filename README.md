@@ -16,7 +16,8 @@
 
 6. Сделай так, чтобы при клике на ссылку оплатить текущий заказ завершался и корзина очищалась
 
-7. Добавь страницу `/login` на которой будет возможность заполнить своё имя. Чтобы сохранить имя используй [cookie()](https://expressjs.com/en/4x/api.html#res.cookie). Чтобы читать имя потребуются [cookies](https://expressjs.com/en/4x/api.html#req.cookies) и `cookie-parser` [middleware](https://expressjs.com/en/resources/middleware/cookie-parser.html).
+7. Добавь страницу `/login` на которой будет возможность заполнить своё имя. Чтобы сохранить имя используй [cookie()](https://expressjs.com/en/4x/api.html#res.cookie). Чтобы читать имя потребуются [cookies](https://expressjs.com
+/en/4x/api.html#req.cookies) и `cookie-parser` [middleware](https://expressjs.com/en/resources/middleware/cookie-parser.html).
 
 Обрати внимание, что форма посылается GET запросом. Чтобы прочитать параметры используй [query](https://expressjs.com/en/4x/api.html#req.query). Не забудь поправить шаблон, чтобы в нём отображалось сохранённое имя.
 
