@@ -124,7 +124,6 @@ app.post("/cart", (req, res) => {
 app.get("/login", (req, res) => {
     const username = req.query.username || req.cookies.username;
     currentUser = getCurrentUser(username);
-    console.log(users);
 
     res.cookie('username', username);
     res.render('login', {
