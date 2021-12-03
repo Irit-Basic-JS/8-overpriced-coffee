@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 const rootDir = process.cwd();
 const port = 3000;
 const app = express();
-let sum = 0;
+let customerOrders = {}
 
 const items = {
   "Americano": {
@@ -59,7 +59,7 @@ app.engine(
 
 // 2
 app.use('/static', express.static('static'));
-// console.log(rootDir);
+app.use(cookieParser());
 // 
 app.get("/", (_, res) => {
   res.redirect('/menu')
@@ -69,42 +69,59 @@ app.get("/", (_, res) => {
 app.get("/menu", (_, res) => {
   res.render("menu", {
     layout: "default",
+    title: "overpriced coffee",
     items: Object.values(items),
   });
 });
-// cart2 
+
 app.get("/buy/:name", (req, res) => {
   let item = items[req.params.name];
-  cartContents.push(item);
-  sum += item.price;
+  let username = req.cookies.username || "Аноним";
+  if (!(username in customerOrders)) {
+    customerOrders[username] = [];
+  }
+  customerOrders[username].push(items[req.params.name])
+  //cartContents.push(item);
+  //sum += item.price;
   res.redirect('/menu');
 });
 
-const cartContents = [];
-
 app.get("/cart", (req, res) => {
+  let username = req.cookies.username || "Аноним";
+  let order = [];
+  let userPrice = 0;
+  if(username in customerOrders) {
+    order = customerOrders[username];
+    userPrice = customerOrders[username].reduce((s, current) => s + current.price, 0)
+  }
+
   res.render("cart", {
     layout: "default",
-    cartContents: cartContents,
-    sum: sum,
-  });
-});
-
-
-app.get("/cart2", (req,res) => {
-  res.render("cart2", {
-    layout: "default",
-    cartContents: [],
-    sum: sum,
+    title: 'корзина',
+    cartContents: order,
+    sum: userPrice,
   });
 });
 
 app.post("/cart", (req, res) => {
-  res.status(501).end();
+  res.render("cart", {
+    layout: "default",
+    cartContents: [],
+    title: "Корзина",
+    sum: 0,
+  });
 });
 
+
 app.get("/login", (req, res) => {
-  res.status(501).end();
+  const username = req.query.username || req.cookies.username || "Аноним";
+  res.cookie("username", username);
+  res.render("login", {
+    layout: "default",
+    title: "Личный кабинет",
+    username: username,
+  });
 });
+
 
 app.listen(port, () => console.log(`App listening on port ${port}`));
