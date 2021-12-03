@@ -1,0 +1,12 @@
+{{#each history}}
+    <section class="user__hello">Заказ №{{number}} на сумму {{totalPrice}} ₽</section>
+    <ul class="coffee__list">
+        {{#each items}}
+            <li>
+                <header class="coffee__name">{{name}}</header>
+                <img src="{{image}}" alt="{{name}}">
+                <footer>{{price}} ₽</footer>
+            </li>
+        {{/each}}
+    </ul>
+{{/each}}
